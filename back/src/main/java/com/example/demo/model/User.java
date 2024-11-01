@@ -1,9 +1,14 @@
 package com.example.demo.model;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import jakarta.persistence.Entity;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users")  // 数据库中的表名应为 users
 public class User {
 
     @Id
@@ -16,6 +21,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, length = 50)
     private String role = "USER";
 
     // Getter 和 Setter 方法
@@ -31,7 +37,7 @@ public class User {
         return username;
     }
 
-    public void setUsername(String username) {  // 添加 setUsername 方法
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -39,7 +45,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {  // 添加 setPassword 方法
+    public void setPassword(String password) {
         this.password = password;
     }
 
