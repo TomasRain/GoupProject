@@ -1,15 +1,15 @@
 <template>
-  <div id="app">
-    <Seckill />
-  </div>
+  <v-app>
+    <router-view /> <!-- 根据路由显示不同的页面 -->
+  </v-app>
 </template>
 
 <script>
-import Seckill from './components/Seckill.vue';
-
 export default {
-  components: {
-    Seckill
-  }
+  name: 'App'
 }
 </script>
+
+<style>
+/* 可选的全局样式 */
+</style>

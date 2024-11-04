@@ -1,11 +1,11 @@
 package com.example.demo.model;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Entity;//tmlgbd，javax用不了，但检查不出错误，我真是干了.
 
 @Entity
 @Table(name = "users")  // 数据库中的表名应为 users
