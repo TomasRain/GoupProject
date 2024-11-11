@@ -1,11 +1,9 @@
 package com.example.demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.util.Date;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
@@ -13,45 +11,58 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    public Long productId;  // 关联商品 ID
-    public Long userId;     // 购买用户 ID
-    public Date orderTime;  // 下单时间
-    public Integer quantity;  // 购买数量,公开的，可能不安全
+    // 建立与 Product 的多对一关系
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    @NotNull(message = "商品不能为空")
+    private Product product;
+
+    // 建立与 User 的多对一关系
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @NotNull(message = "用户不能为空")
+    private User user;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime orderTime;
+
+    @NotNull(message = "购买数量不能为空")
+    @Min(value = 1, message = "购买数量至少为1")
+    @Column(nullable = false)
+    private Integer quantity;
 
     // Getter 和 Setter 方法
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    // setId 方法通常不需要
+
+    public Product getProduct() {
+        return product;
     }
 
-    public Long getProductId() {
-        return productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public User getUser() {
+        return user;
     }
 
-    public Long getUserId() {
-        return userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Date getOrderTime() {
+    public LocalDateTime getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(Date orderTime) {
-        this.orderTime = orderTime;
-    }
+    // orderTime 由数据库自动生成，不需要 setter
 
     public Integer getQuantity() {
         return quantity;
