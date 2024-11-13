@@ -2,11 +2,10 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-//不能用javax！！！！重要的事情反复强调
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
-@Table(name = "users")  // 数据库中的表名应为 users
+@Table(name = "users")
 public class User {
 
     @Id
@@ -26,15 +25,10 @@ public class User {
     @Column(nullable = false, length = 50)
     private Role role = Role.USER;
 
-    // 定义角色枚举
     public enum Role {
         USER,
         ADMIN
-        // 可以根据需要添加更多角色
     }
-
-    // 无参构造函数
-    public User() {}
 
     // Getter 和 Setter 方法
 
@@ -42,7 +36,7 @@ public class User {
         return id;
     }
 
-    // setId 方法通常不需要，因为 ID 是自动生成的
+    // setId 方法通常不需要
 
     public String getUsername() {
         return username;
@@ -56,7 +50,7 @@ public class User {
         return password;
     }
 
-    // 设置密码时进行加密
+    // 在这里进行密码加密
     public void setPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         this.password = passwordEncoder.encode(password);

@@ -6,9 +6,9 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',  // 指向后端服务
+        target: 'http://localhost:28080',  // 指向后端服务
         changeOrigin: true,
-        pathRewrite: { '^/api': '' },    // 把前端的 /api 路径重写为空，使其指向后端的根路径
+        //pathRewrite: { '^/api': '' },    // 把前端的 /api 路径重写为空，使其指向后端的根路径
       }
     }
   }
