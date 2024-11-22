@@ -34,7 +34,7 @@ export default {
   methods: {
     fetchProducts() {
       axios
-        .get('http://localhost:8080/api/products')
+        .get('/api/products')
         .then(response => {
           this.products = response.data;
         })

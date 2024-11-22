@@ -1,29 +1,29 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2>Login</h2>
+      <h2>登录</h2>
       <form @submit.prevent="login">
         <div class="form-group">
-          <label for="username">Username</label>
+          <label for="username">用户名</label>
           <input
             type="text"
             id="username"
             v-model="username"
             required
-            placeholder="Enter your username"
+            placeholder="请输入用户名"
           />
         </div>
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="password">密码</label>
           <input
             type="password"
             id="password"
             v-model="password"
             required
-            placeholder="Enter your password"
+            placeholder="请输入密码"
           />
         </div>
-        <button type="submit" class="login-button">Login</button>
+        <button type="submit" class="login-button">登录</button>
       </form>
       <p v-if="message" class="alert-message">{{ message }}</p>
     </div>
@@ -31,9 +31,8 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
+  name: 'Login',
   data() {
     return {
       username: '',
@@ -43,20 +42,25 @@ export default {
   },
   methods: {
     login() {
-      axios.post('http://localhost:8080/api/auth/login', {
-        username: this.username,
-        password: this.password
-      })
-      .then(response => {
-        if (response.data === 'Login successful!') {
-          this.$router.push({ name: 'Home' });  // 跳转到主界面
-        } else {
-          this.message = response.data;
-        }
-      })
-      .catch(error => {
-        this.message = 'Login failed!';
-      });
+      this.$axios
+        .post('/api/auth/login', {
+          username: this.username,
+          password: this.password
+        })
+        .then(response => {
+          console.log('Login successful:', response.data);
+          const token = response.data.token; // 后端返回的令牌
+          localStorage.setItem('token', token); // 将令牌存储到 localStorage
+          this.$router.push({ name: 'FlashSale' }); // 跳转到秒杀页面
+        })
+        .catch(error => {
+          console.error('Login error:', error.response);
+          if (error.response && error.response.status === 401) {
+            this.message = '用户名或密码错误。';
+          } else {
+            this.message = '发生了意外错误，请稍后重试。';
+          }
+        });
     }
   }
 };
@@ -113,6 +117,10 @@ h2 {
   color: white;
   font-size: 16px;
   cursor: pointer;
+}
+
+.login-button:hover {
+  background-color: #0056b3;
 }
 
 .alert-message {
