@@ -26,6 +26,9 @@
         <button type="submit" class="login-button">登录</button>
       </form>
       <p v-if="message" class="alert-message">{{ message }}</p>
+      <p class="register-link">
+        还没有账号？<router-link to="/register">点击注册</router-link>
+      </p>
     </div>
   </div>
 </template>
@@ -49,9 +52,11 @@ export default {
         })
         .then(response => {
           console.log('Login successful:', response.data);
-          const token = response.data.token; // 后端返回的令牌
-          localStorage.setItem('token', token); // 将令牌存储到 localStorage
-          this.$router.push({ name: 'FlashSale' }); // 跳转到秒杀页面
+          const token = response.data.token;
+          const role = response.data.role; // 获取角色信息
+          localStorage.setItem('token', token);
+          localStorage.setItem('role', role); // 将角色信息存储到 localStorage
+          this.$router.push({ name: 'FlashSale' });
         })
         .catch(error => {
           console.error('Login error:', error.response);
@@ -126,5 +131,18 @@ h2 {
 .alert-message {
   color: red;
   margin-top: 15px;
+}
+
+.register-link {
+  margin-top: 15px;
+}
+
+.register-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
 </style>

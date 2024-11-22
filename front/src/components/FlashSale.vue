@@ -21,7 +21,8 @@
     name: 'FlashSale',
     data() {
       return {
-        products: []
+        products: [],
+        role: localStorage.getItem('role') || 'USER' // 获取角色信息，默认为 USER
       };
     },
     created() {

@@ -1,49 +1,50 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Login from '../components/Login.vue';       // 登录页面组件
-import FlashSale from '../components/FlashSale.vue'; // 秒杀系统组件
+import Login from '../components/Login.vue';
+import Register from '../components/Register.vue';
+import FlashSale from '../components/FlashSale.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    redirect: '/flashsale' // 将根路径重定向到秒杀页面
+    redirect: '/flashsale'
   },
   {
     path: '/login',
-    name: 'Login',            // 登录页面
+    name: 'Login',
     component: Login
   },
   {
-    path: '/flashsale',
-    name: 'FlashSale',        // 秒杀系统页面
-    component: FlashSale,
-    meta: {
-      requiresAuth: true     // 需要认证
-    }
+    path: '/register',
+    name: 'Register',
+    component: Register
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/flashsale',
+    name: 'FlashSale',
+    component: FlashSale,
+    meta: {
+      requiresAuth: true
+    }
   }
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(), // 如果希望使用 HTML5 模式，可以改为 createWebHistory()
+  history: createWebHashHistory(),
   routes
 });
 
-// 路由守卫，检查认证状态
+// 路由守卫
 router.beforeEach((to, from, next) => {
-  const isLoggedIn = !!localStorage.getItem('token'); // 检查本地是否有 token
+  const isLoggedIn = !!localStorage.getItem('token');
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isLoggedIn) {
-      next({ name: 'Login' }); // 未登录，跳转到登录页面
+      next({ name: 'Login' });
     } else {
-      next(); // 已登录，允许访问
+      next();
     }
   } else {
-    next(); // 不需要认证，允许访问
+    next();
   }
 });
 
