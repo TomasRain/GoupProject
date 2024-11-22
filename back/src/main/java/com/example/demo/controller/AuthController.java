@@ -9,6 +9,7 @@ import com.example.demo.util.JwtUtil;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // 导入 BCryptPasswordEncoder
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,11 +23,13 @@ public class AuthController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
+    private final BCryptPasswordEncoder passwordEncoder; // 添加密码编码器
 
     // 构造器注入
-    public AuthController(UserService userService, JwtUtil jwtUtil) {
+    public AuthController(UserService userService, JwtUtil jwtUtil, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
@@ -52,8 +55,8 @@ public class AuthController {
         Optional<User> userOptional = userService.findByUsername(loginRequest.getUsername());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // 直接比较明文密码
-            if (loginRequest.getPassword().equals(user.getPassword())) {
+            // 使用密码编码器验证密码
+            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 String token = jwtUtil.generateToken(user.getUsername());
                 Map<String, String> response = new HashMap<>();
                 response.put("token", token);
