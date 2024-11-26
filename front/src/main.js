@@ -12,6 +12,12 @@ import { aliases, mdi } from 'vuetify/iconsets/mdi'; // 使用 Material Design �
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 
+// 引入图标字体
+import 'material-design-icons-iconfont/dist/material-design-icons.css';
+
+// 引入通知插件
+import Notifications from '@kyvg/vue3-notification';
+
 // 初始化 Vuetify
 const vuetify = createVuetify({
   icons: {
@@ -72,6 +78,9 @@ axios.interceptors.response.use(
 
 // 创建 Vue 应用
 const app = createApp(App);
+
+// 使用通知插件
+app.use(Notifications);
 
 // 将 Axios 添加到全局
 app.config.globalProperties.$axios = axios;

@@ -2,42 +2,51 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
 import FlashSale from '../components/FlashSale.vue';
+import ProductDetail from '../components/ProductDetail.vue'; // 引入商品详情组件
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    redirect: '/flashsale'
+    redirect: '/flashsale',
   },
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: Login,
   },
   {
     path: '/register',
     name: 'Register',
-    component: Register
+    component: Register,
   },
   {
     path: '/flashsale',
     name: 'FlashSale',
     component: FlashSale,
     meta: {
-      requiresAuth: true
-    }
-  }
+      requiresAuth: true,
+    },
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: ProductDetail,
+    meta: {
+      requiresAuth: true,
+    },
+  },
 ];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
+  routes,
 });
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
   const isLoggedIn = !!localStorage.getItem('token');
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isLoggedIn) {
       next({ name: 'Login' });
     } else {

@@ -963,6 +963,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@kyvg/vue3-notification@^3.4.1":
+  "integrity" "sha512-WhTWCbF36JHLJR5UdKmJF7KXGOGVy4tLeaJuKTHZhwttZWnbF9w1/c2d32tvCSwY9CdeX/n9uoaKWLMKK3vOyg=="
+  "resolved" "https://registry.npmjs.org/@kyvg/vue3-notification/-/vue3-notification-3.4.1.tgz"
+  "version" "3.4.1"
+
 "@leichtgewicht/ip-codec@^2.0.1":
   "integrity" "sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw=="
   "resolved" "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.5.tgz"
@@ -3348,6 +3353,11 @@
   "resolved" "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   "version" "1.0.0"
 
+"fsevents@~2.3.2":
+  "integrity" "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="
+  "resolved" "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  "version" "2.3.3"
+
 "function-bind@^1.1.2":
   "integrity" "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA=="
   "resolved" "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"
@@ -3981,13 +3991,14 @@
   "resolved" "file:"
   "version" "0.1.0"
   dependencies:
+    "@kyvg/vue3-notification" "^3.4.1"
     "axios" "^1.7.7"
     "core-js" "^3.8.3"
     "jwt-decode" "^3.1.2"
     "killing" "file:"
     "vue" "^3.2.13"
     "vue-router" "^4.0.3"
-    "vuetify" "^3.7.3"
+    "vuetify" "^3.7.4"
     "vuex" "^4.0.0"
 
 "kind-of@^6.0.2":
@@ -4184,6 +4195,11 @@
   "version" "3.1.0"
   dependencies:
     "semver" "^6.0.0"
+
+"material-design-icons-iconfont@^6.7.0":
+  "integrity" "sha512-lSj71DgVv20kO0kGbs42icDzbRot61gEDBLQACzkUuznRQBUYmbxzEkGU6dNBb5fRWHMaScYlAXX96HQ4/cJWA=="
+  "resolved" "https://registry.npmjs.org/material-design-icons-iconfont/-/material-design-icons-iconfont-6.7.0.tgz"
+  "version" "6.7.0"
 
 "mdn-data@2.0.14":
   "integrity" "sha512-dn6wd0uw5GsdswPFfsgMp5NSB0/aDe6fK94YJV/AJDYXL6HVLWBsxeq7js7Ad+mU2K9LAlwpk6kN2D5mwCPVow=="
@@ -6014,7 +6030,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@*", "vue@^2 || ^3.2.13", "vue@^3.2.0", "vue@^3.2.13", "vue@^3.3.0", "vue@3.5.12":
+"vue@*", "vue@^2 || ^3.2.13", "vue@^3.0.0", "vue@^3.2.0", "vue@^3.2.13", "vue@^3.3.0", "vue@3.5.12":
   "integrity" "sha512-CLVZtXtn2ItBIi/zHZ0Sg1Xkb7+PU32bJJ8Bmy7ts3jxXTcbfsEfBivFYYWz1Hur+lalqGAh65Coin0r+HRUfg=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.5.12.tgz"
   "version" "3.5.12"
@@ -6025,10 +6041,10 @@
     "@vue/server-renderer" "3.5.12"
     "@vue/shared" "3.5.12"
 
-"vuetify@^3.7.3":
-  "integrity" "sha512-bpuvBpZl1/+nLlXDgdVXekvMNR6W/ciaoa8CYlpeAzAARbY8zUFSoBq05JlLhkIHI58AnzKVy4c09d0OtfYAPg=="
-  "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-3.7.3.tgz"
-  "version" "3.7.3"
+"vuetify@^3.7.4":
+  "integrity" "sha512-Y8UU5wUDQXC3oz2uumPb8IOdvB4XMCxtxnmqdOc+LihNuPlkSgxIwf92ndRzbOtJFKHsggFUxpyLqpQp+A+5kg=="
+  "resolved" "https://registry.npmjs.org/vuetify/-/vuetify-3.7.4.tgz"
+  "version" "3.7.4"
 
 "vuex@^4.0.0":
   "integrity" "sha512-hmV6UerDrPcgbSy9ORAtNXDr9M4wlNP4pEFKye4ujJF8oqgFFuxDCdOLS3eNoRTtq5O3hoBDh9Doj1bQMYHRbQ=="
