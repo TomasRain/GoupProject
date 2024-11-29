@@ -2,6 +2,9 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -49,9 +52,11 @@ public class Product {
     @JoinColumn(name = "category_id")
     private Category category;  // 产品所属分类
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;  // 创建时间
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;  // 更新时间
 
@@ -126,13 +131,9 @@ public class Product {
         return createdAt;
     }
 
-    // 不提供 setCreatedAt 方法，创建时间由数据库自动设置
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
-    // 不提供 setUpdatedAt 方法，更新时间由数据库自动设置
 
     public Integer getVersion() {
         return version;

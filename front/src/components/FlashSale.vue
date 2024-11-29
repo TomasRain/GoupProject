@@ -8,10 +8,11 @@
           label="搜索商品"
           prepend-inner-icon="mdi-magnify"
           @keyup.enter="onSearch"
+          clearable
         ></v-text-field>
       </v-col>
       <v-col cols="4" class="text-right">
-        <v-btn color="error" @click="logout">注销</v-btn>
+        <v-btn color="error" @click="handleLogout">注销</v-btn>
       </v-col>
     </v-row>
 
@@ -28,22 +29,27 @@
         <v-card
           class="mx-auto product-card"
           max-width="344"
-          @click="goToProductDetail(product.id)"
+          elevation="4"
         >
           <v-img
-            :src="product.image"
+            :src="product.imageUrl"
             height="200px"
             @error="onImageError"
+            @click="goToProductDetail(product.id)"
+            class="cursor-pointer"
+            aspect-ratio="1.5"
           ></v-img>
-          <v-card-title>{{ product.name }}</v-card-title>
-          <v-card-subtitle class="original-price">
-            原价：¥{{ product.originalPrice }}
-          </v-card-subtitle>
-          <v-card-subtitle class="sale-price">
-            秒杀价：¥{{ product.salePrice }}
-          </v-card-subtitle>
+          <v-card-text>
+            <div class="text-h6 font-weight-bold">{{ product.name }}</div>
+            <div class="original-price">
+              原价：<s>¥{{ product.originalPrice }}</s>
+            </div>
+            <div class="sale-price">
+              秒杀价：¥{{ product.salePrice }}
+            </div>
+          </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" block @click.stop="buyProduct(product.id)">
+            <v-btn color="primary" block @click="buyProduct(product.id)">
               立即抢购
             </v-btn>
           </v-card-actions>
@@ -57,32 +63,56 @@
         <v-pagination
           v-model="currentPage"
           :length="totalPages"
+          @update:modelValue="fetchFlashSaleProducts"
         ></v-pagination>
       </v-col>
     </v-row>
+
+    <!-- Snackbar 通知 -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      timeout="3000"
+      location="top right"
+    >
+      {{ snackbar.message }}
+      <template #actions>
+        <v-btn text @click="goHome">
+          关闭
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
 <script>
+import AuthService from '@/services/auth';
+import { mapActions } from 'vuex';
+
 export default {
   name: 'FlashSale',
   data() {
     return {
       products: [],
-      role: localStorage.getItem('role') || 'USER', // 获取角色信息，默认为 USER
       currentPage: 1,
       totalPages: 1,
       itemsPerPage: 8, // 每页显示的商品数量
       searchQuery: '', // 搜索关键词
+      snackbar: {
+        show: false,
+        message: '',
+        color: 'success',
+      },
     };
   },
   created() {
     this.fetchFlashSaleProducts();
   },
   methods: {
+    ...mapActions('auth', ['logout']),
     fetchFlashSaleProducts() {
       this.$axios
-        .get('/api/flashsale/products', {
+        .get('/api/products', { // 确保后端接口路径正确
           params: {
             page: this.currentPage,
             size: this.itemsPerPage,
@@ -95,51 +125,32 @@ export default {
         })
         .catch((error) => {
           console.error('Error fetching products:', error);
-          // 如果未认证，跳转回登录页面
-          if (error.response && error.response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            this.$router.push({ name: 'Login' });
-          } else {
-            // 其他错误处理
-            this.$notify({
-              type: 'error',
-              title: '错误',
-              text: '获取商品列表失败，请稍后重试。',
-            });
-          }
+          this.snackbar.message = '获取产品列表失败，请稍后重试。';
+          this.snackbar.color = 'error';
+          this.snackbar.show = true;
         });
     },
     buyProduct(productId) {
       this.$axios
-        .post(`/api/flashsale/buy/${productId}`)
-        .then((response) => {
-          this.$notify({ type: 'success', title: '成功', text: '购买成功！' });
+        .post(`/api/products/buy/${productId}`)
+        .then(() => {
+          this.snackbar.message = '购买成功！';
+          this.snackbar.color = 'success';
+          this.snackbar.show = true;
           // 购买成功后刷新商品列表
           this.fetchFlashSaleProducts();
         })
         .catch((error) => {
           console.error('Error buying product:', error);
-          if (error.response && error.response.status === 401) {
-            // 未认证，跳转到登录页面
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            this.$router.push({ name: 'Login' });
-          } else {
-            this.$notify({
-              type: 'error',
-              title: '错误',
-              text: error.response.data.message || '购买失败，请重试。',
-            });
+          if (error.response && error.response.status !== 401) {
+            this.snackbar.message = error.response.data.message || '购买失败，请重试。';
+            this.snackbar.color = 'error';
+            this.snackbar.show = true;
           }
         });
     },
-    logout() {
-      // 清除本地存储的令牌
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
-      // 重定向到登录页面
-      this.$router.push({ name: 'Login' });
+    handleLogout() {
+      AuthService.logout(); // 通过 Vuex action 执行登出操作
     },
     onSearch() {
       this.currentPage = 1;
@@ -148,8 +159,11 @@ export default {
     goToProductDetail(productId) {
       this.$router.push({ name: 'ProductDetail', params: { id: productId } });
     },
+    goHome() {
+      this.$router.push({ name: 'Home' });
+    },
     onImageError(event) {
-      event.target.src = '/images/placeholder.png'; // 替换为占位图的路径
+      event.target.src = require('@/assets/placeholder.png'); // 替换为占位图的路径
     },
   },
   watch: {
@@ -162,7 +176,6 @@ export default {
 
 <style scoped>
 .original-price {
-  text-decoration: line-through;
   color: #888;
 }
 
@@ -174,13 +187,16 @@ export default {
 
 /* 调整卡片样式 */
 .product-card {
-  cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 /* 响应式调整 */

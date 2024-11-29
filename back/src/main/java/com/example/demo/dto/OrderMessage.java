@@ -1,31 +1,28 @@
 package com.example.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
+/**
+ * DTO for order messages sent to RabbitMQ
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderMessage implements Serializable {
     private Long userId;
     private Long productId;
+    private Integer quantity;
 
-    public OrderMessage(Long userId, Long productId) {
-        this.userId = userId;
-        this.productId = productId;
-    }
-
-    // Getter 和 Setter 方法
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    @Override
+    public String toString() {
+        return "OrderMessage{" +
+                "userId=" + userId +
+                ", productId=" + productId +
+                ", quantity=" + quantity +
+                '}';
     }
 }

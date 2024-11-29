@@ -2,7 +2,7 @@
   <div class="login-container">
     <div class="login-card">
       <h2>登录</h2>
-      <form @submit.prevent="login">
+      <form @submit.prevent="handleLogin">
         <div class="form-group">
           <label for="username">用户名</label>
           <input
@@ -25,7 +25,9 @@
         </div>
         <button type="submit" class="login-button">登录</button>
       </form>
-      <p v-if="message" class="alert-message">{{ message }}</p>
+      <p v-if="message" :class="{'success-message': success, 'error-message': !success}">
+        {{ message }}
+      </p>
       <p class="register-link">
         还没有账号？<router-link to="/register">点击注册</router-link>
       </p>
@@ -34,40 +36,44 @@
 </template>
 
 <script>
+import AuthService from '@/services/auth';
+import { mapActions } from 'vuex';
+
 export default {
   name: 'Login',
   data() {
     return {
       username: '',
       password: '',
-      message: ''
+      message: '',
+      success: false,
     };
   },
   methods: {
-    login() {
-      this.$axios
-        .post('/api/auth/login', {
-          username: this.username,
-          password: this.password
-        })
-        .then(response => {
-          console.log('Login successful:', response.data);
-          const token = response.data.token;
-          const role = response.data.role; // 获取角色信息
-          localStorage.setItem('token', token);
-          localStorage.setItem('role', role); // 将角色信息存储到 localStorage
-          this.$router.push({ name: 'FlashSale' });
+    ...mapActions('auth', ['setAuth', 'logout']),
+    handleLogin() {
+      AuthService.login(this.username, this.password)
+        .then(data => {
+          this.setAuth({ token: data.token, role: data.role });
+          this.success = true;
+          this.message = '登录成功！即将跳转...';
+          setTimeout(() => {
+            this.$router.push({ name: 'FlashSale' });
+          }, 1000);
         })
         .catch(error => {
-          console.error('Login error:', error.response);
-          if (error.response && error.response.status === 401) {
+          console.error('Login error:', error);
+          this.success = false;
+          if (error.message === '令牌已过期，请重新登录' || error.message === '无效的令牌') {
+            this.message = '登录信息已过期，请重新登录。';
+          } else if (error.response && error.response.status === 401) {
             this.message = '用户名或密码错误。';
           } else {
             this.message = '发生了意外错误，请稍后重试。';
           }
         });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -128,7 +134,12 @@ h2 {
   background-color: #0056b3;
 }
 
-.alert-message {
+.success-message {
+  color: green;
+  margin-top: 15px;
+}
+
+.error-message {
   color: red;
   margin-top: 15px;
 }

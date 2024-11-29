@@ -1,42 +1,25 @@
 package com.example.demo.dto;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+/**
+ * DTO for order responses
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderDTO {
     private Long id;
-    private String productName;
-    private String username;
-    private LocalDateTime orderTime;
-    private Integer quantity;
-
-    // 构造器
-    public OrderDTO(Long id, String productName, String username, LocalDateTime orderTime, Integer quantity) {
-        this.id = id;
-        this.productName = productName;
-        this.username = username;
-        this.orderTime = orderTime;
-        this.quantity = quantity;
-    }
-
-    // Getter 方法
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public LocalDateTime getOrderTime() {
-        return orderTime;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
+    private Long userId;
+    private Set<OrderItemDTO> orderItems;
+    private BigDecimal totalAmount;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

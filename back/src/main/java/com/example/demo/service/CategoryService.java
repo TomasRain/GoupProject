@@ -1,9 +1,10 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.CategoryDTO;
+import com.example.demo.exception.specific.CategoryNotFoundException;
 import com.example.demo.model.Category;
 import com.example.demo.repository.CategoryRepository;
-import com.example.demo.exception.CategoryNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

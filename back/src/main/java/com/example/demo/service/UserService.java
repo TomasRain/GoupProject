@@ -1,10 +1,12 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.UserDTO;
-import com.example.demo.exception.UserAlreadyExistsException;
+import com.example.demo.exception.specific.UserAlreadyExistsException;
 import com.example.demo.model.User;
 import com.example.demo.model.User.Role; // 导入 Role 枚举
 import com.example.demo.repository.UserRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // 导入 BCryptPasswordEncoder
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder; // 添加密码编码器
 
     // 构造器注入
+    @Autowired
     public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;

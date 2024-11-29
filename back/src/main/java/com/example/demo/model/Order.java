@@ -3,51 +3,66 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Set;
+
+/**
+ * 实体类：Order
+ * 对应数据库的 orders 表
+ */
 @Entity
-@Table(name = "orders")
+@Table(name = "orders") // 'order' 是 SQL 关键字，建议使用 'orders'
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 建立与 Product 的多对一关系
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    @NotNull(message = "商品不能为空")
-    private Product product;
-
-    // 建立与 User 的多对一关系
+    // 关联用户
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "用户不能为空")
     private User user;
 
+    // 订单中的商品项
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<OrderItem> orderItems;
+
+    @NotNull(message = "订单总金额不能为空")
+    @DecimalMin(value = "0.0", inclusive = true, message = "订单总金额必须为正数")
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalAmount;
+
+    @NotNull(message = "订单状态不能为空")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private OrderStatus status;
+
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime orderTime;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @NotNull(message = "购买数量不能为空")
-    @Min(value = 1, message = "购买数量至少为1")
-    @Column(nullable = false)
-    private Integer quantity;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    // Getter 和 Setter 方法
+    /**
+     * 枚举类：订单状态
+     */
+    public enum OrderStatus {
+        PENDING,    // 待处理
+        PAID,       // 已支付
+        SHIPPED,    // 已发货
+        COMPLETED,  // 已完成
+        CANCELLED   // 已取消
+    }
+
+    // Getters 和 Setter 方法
 
     public Long getId() {
         return id;
-    }
-
-    // setId 方法通常不需要
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
     }
 
     public User getUser() {
@@ -58,17 +73,35 @@ public class Order {
         this.user = user;
     }
 
-    public LocalDateTime getOrderTime() {
-        return orderTime;
+    public Set<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    // orderTime 由数据库自动生成，不需要 setter
-
-    public Integer getQuantity() {
-        return quantity;
+    public void setOrderItems(Set<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }

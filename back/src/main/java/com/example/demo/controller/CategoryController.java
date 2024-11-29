@@ -22,35 +22,60 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    // 获取所有类别
+    /**
+     * 获取所有类别
+     *
+     * @return 类别列表
+     */
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         List<CategoryDTO> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
-    // 获取单个类别详情
+    /**
+     * 获取单个类别详情
+     *
+     * @param id 类别ID
+     * @return 类别详情
+     */
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long id) {
         CategoryDTO categoryDTO = categoryService.getCategoryById(id);
         return ResponseEntity.ok(categoryDTO);
     }
 
-    // 创建新类别
+    /**
+     * 创建新类别
+     *
+     * @param categoryDTO 类别数据
+     * @return 创建的类别
+     */
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
-    // 更新类别
+    /**
+     * 更新类别信息
+     *
+     * @param id          类别ID
+     * @param categoryDTO 更新后的类别数据
+     * @return 更新后的类别
+     */
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO updatedCategory = categoryService.updateCategory(id, categoryDTO);
         return ResponseEntity.ok(updatedCategory);
     }
 
-    // 删除类别
+    /**
+     * 删除类别
+     *
+     * @param id 类别ID
+     * @return 无内容
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);

@@ -35,7 +35,7 @@ public class User {
         return id;
     }
 
-    // setId 方法通常不需要
+    // 移除 setId 方法
 
     public String getUsername() {
         return username;

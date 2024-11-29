@@ -2,7 +2,16 @@ package com.example.demo.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+/**
+ * DTO for order creation requests
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderRequest {
 
     @NotNull(message = "用户ID不能为空")
@@ -14,30 +23,4 @@ public class OrderRequest {
     @NotNull(message = "购买数量不能为空")
     @Min(value = 1, message = "购买数量至少为1")
     private Integer quantity;
-
-    // Getter 和 Setter 方法
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
 }

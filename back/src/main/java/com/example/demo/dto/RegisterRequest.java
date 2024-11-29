@@ -1,32 +1,27 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * DTO for user registration requests
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterRequest {
+
+    @NotBlank(message = "用户名不能为空")
+    @Size(min = 3, max = 50, message = "用户名长度必须在3到50个字符之间")
     private String username;
+
+    @NotBlank(message = "密码不能为空")
+    @Size(min = 6, message = "密码长度至少为6个字符")
     private String password;
-    private String role; // 添加 role 字段
 
-    // Getters 和 Setters
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    @NotBlank(message = "角色不能为空")
+    private String role;
 }

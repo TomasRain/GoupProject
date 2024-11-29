@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_TIME = 60*5; // 1天，单位为毫秒
+    private static final long EXPIRATION_TIME = 60*5*1000; // 5分钟，单位为毫秒
     private static final String SECRET_KEY = "YourSecretKeyForJWTGenerationReplaceThisWithAStrongKey"; // 请替换为您的密钥
 
     private final Key key;

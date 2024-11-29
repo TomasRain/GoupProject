@@ -38,7 +38,13 @@ public class SeckillService {
         STOCK_LUA_SCRIPT.setResultType(Long.class);
     }
 
-    // 秒杀逻辑：扣减库存，发送订单创建消息
+    /**
+     * 秒杀逻辑：扣减库存，发送订单创建消息
+     *
+     * @param productId 产品ID
+     * @param userId    用户ID
+     * @return 秒杀结果消息
+     */
     public String seckill(Long productId, Long userId) {
         if (productId == null || userId == null) {
             return "参数错误";
@@ -65,7 +71,7 @@ public class SeckillService {
             redisTemplate.opsForSet().add(userKey, userId);
 
             // 发送订单创建消息到消息队列
-            OrderMessage orderMessage = new OrderMessage(userId, productId);
+            OrderMessage orderMessage = new OrderMessage(userId, productId, 1); // 假设每次秒杀购买1件
             rabbitTemplate.convertAndSend("orderExchange", "orderRoutingKey", orderMessage);
 
             return "秒杀成功，正在生成订单";
