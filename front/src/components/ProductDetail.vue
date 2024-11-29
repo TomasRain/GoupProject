@@ -1,54 +1,71 @@
 <template>
-  <v-container fluid>
+  <v-container class="product-detail" fluid>
     <!-- 返回按钮 -->
-    <v-row>
-      <v-col cols="12">
-        <v-btn icon @click="goBack">
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-btn icon @click="goBack" class="mt-4 ml-2">
+      <v-icon>mdi-arrow-left</v-icon>
+    </v-btn>
 
-    <!-- 商品详情 -->
-    <v-row>
-      <v-col cols="12" sm="6">
-        <img :src="product.imageUrl" height="400px" @error="onImageError"></img>
-      </v-col>
-      <v-col cols="12" sm="6">
-        <h1>{{ product.name }}</h1>
-        <p class="original-price">原价：¥{{ product.originalPrice }}</p>
-        <p class="sale-price">秒杀价：¥{{ product.salePrice }}</p>
-        <v-divider></v-divider>
-        <p>{{ product.description }}</p>
-        <v-btn color="primary" @click="buyProduct(product.id)">立即抢购</v-btn>
-      </v-col>
-    </v-row>
+    <!-- 商品详情卡片 -->
+    <v-card class="mx-auto my-4 pa-4" max-width="800">
+      <v-row>
+        <!-- 商品图片 -->
+        <v-col cols="12" sm="6">
+          <v-img
+            :src="product.imageUrl"
+            :alt="product.name"
+            :lazy-src="placeholderImage"
+            :aspect-ratio="1"
+            class="rounded"
+            height="100%"
+          ></v-img>
+        </v-col>
+
+        <!-- 商品信息 -->
+        <v-col cols="12" sm="6">
+          <h2 class="font-weight-bold">{{ product.name }}</h2>
+          <div class="price-section my-3">
+            <div class="original-price">
+              原价：<s>¥{{ product.originalPrice }}</s>
+            </div>
+            <div class="sale-price">
+              秒杀价：¥{{ product.salePrice }}
+            </div>
+          </div>
+          <v-divider></v-divider>
+          <p class="mt-4">{{ product.description }}</p>
+          <v-btn
+            color="primary"
+            class="mt-4"
+            large
+            @click="buyProduct(product.id)"
+          >
+            立即抢购
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card>
 
     <!-- Snackbar 通知 -->
     <v-snackbar
       v-model="snackbar.show"
       :color="snackbar.color"
       timeout="3000"
-      top
-      right
+      location="top right"
     >
       {{ snackbar.message }}
-      <v-btn color="white" text @click="goHome">
-        关闭
-      </v-btn>
+      <template #actions>
+        <v-btn text @click="snackbar.show = false">关闭</v-btn>
+      </template>
     </v-snackbar>
   </v-container>
 </template>
 
+
 <script>
+import placeholderImage from '@/assets/placeholder.png';
+
 export default {
   name: 'ProductDetail',
-  props: {
-    id: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       product: {},
@@ -57,10 +74,12 @@ export default {
         message: '',
         color: 'success',
       },
+      placeholderImage,
     };
   },
   created() {
-    this.fetchProductDetail(this.id);
+    const productId = this.$route.params.id;
+    this.fetchProductDetail(productId);
   },
   methods: {
     fetchProductDetail(productId) {
@@ -79,58 +98,80 @@ export default {
               this.$router.push({ name: 'FlashSale' });
             }, 3000);
           }
-          // 401 错误已在 Axios 响应拦截器中处理
         });
     },
     buyProduct(productId) {
       this.$axios
         .post(`/products/buy/${productId}`)
-        .then((response) => {
+        .then(() => {
           this.snackbar.message = '购买成功！';
           this.snackbar.color = 'success';
           this.snackbar.show = true;
-          // 购买成功后刷新商品详情
           this.fetchProductDetail(productId);
         })
         .catch((error) => {
           console.error('Error buying product:', error);
           if (error.response && error.response.status !== 401) {
-            this.snackbar.message = error.response.data.message || '购买失败，请重试。';
+            this.snackbar.message =
+              error.response.data.message || '购买失败，请重试。';
             this.snackbar.color = 'error';
             this.snackbar.show = true;
           }
-          // 401 错误已在 Axios 响应拦截器中处理
         });
     },
     goBack() {
       this.$router.back();
     },
     goHome() {
-    this.$router.push({ name: 'Home' });
-    },
-    onImageError(event) {
-      event.target.src = require('@/assets/placeholder.png'); // 替换为占位图的路径
+      this.$router.push({ name: 'Home' });
     },
   },
 };
 </script>
 
+
 <style scoped>
+.product-detail {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.v-card {
+  background-color: #ffffff;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.price-section {
+  display: flex;
+  flex-direction: column;
+}
+
 .original-price {
-  text-decoration: line-through;
   color: #888;
+  font-size: 16px;
 }
 
 .sale-price {
   color: #e60012;
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
 }
 
-/* 响应式调整 */
+p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.v-btn {
+  width: 100%;
+}
+
 @media (max-width: 600px) {
-  h1 {
+  h2 {
     font-size: 24px;
   }
 }
