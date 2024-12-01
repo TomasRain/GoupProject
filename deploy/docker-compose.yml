@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  backend:
+    image: seckill-backend:latest
+    container_name: seckill-backend
+    restart: always
+    ports:
+      - "28080:28080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/seckill_db?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    networks:
+      - seckill-network
+
+  frontend:
+    image: seckill-frontend:latest
+    container_name: seckill-frontend
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - seckill-network
+
+  db:
+    image: mysql:latest
+    container_name: Test
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=seckill_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - seckill-network
+
+volumes:
+  mysql_data:
+
+networks:
+  seckill-network:

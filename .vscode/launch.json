@@ -1,0 +1,45 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "test",
+      "request": "launch",
+      "mainClass": "com.example.demo.test.test",
+      "projectName": "demo"
+    },
+    {
+      "type": "java",
+      "name": "PasswordEncoderUtil",
+      "request": "launch",
+      "mainClass": "com.example.demo.test.PasswordEncoderUtil",
+      "projectName": "demo"
+    },
+    {
+      "type": "java",
+      "name": "KillingApplication",
+      "request": "launch",
+      "mainClass": "com.example.demo.KillingApplication",
+      "projectName": "demo"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": true,
+      "cwd": "c:/Users/Tom_Rain/Desktop/VScode/code",
+      "program": "c:/Users/Tom_Rain/Desktop/VScode/code/build/Debug/outDebug",
+      "MIMode": "gdb",
+      "miDebuggerPath": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}

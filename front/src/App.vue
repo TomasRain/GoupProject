@@ -1,15 +1,18 @@
 <template>
-  <div id="app">
-    <Seckill />
-  </div>
+  <v-app>
+    <v-main>
+      <router-view/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import Seckill from './components/Seckill.vue';
 
 export default {
-  components: {
-    Seckill
-  }
+  name: 'App',
+
+  data: () => ({
+    //
+  }),
 }
 </script>
