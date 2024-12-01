@@ -2,22 +2,26 @@ version: '3'
 
 services:
   backend:
-    image: seckill-backend:latest
+    image: seckill-backend:latest  # 根据您的实际镜像标签修改
     container_name: seckill-backend
     restart: always
     ports:
       - "28080:28080"
     depends_on:
-      - db
+      - Test  # 修改为您实际的 MySQL 容器名
+      - rabbitmq  # 使用正确的 RabbitMQ 容器名
+      - Name  # 修改为您实际的 Redis 容器名
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/seckill_db?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+      - SPRING_DATASOURCE_URL=jdbc:mysql://Test:3306/seckill_db?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC  # 使用 MySQL 容器名 Test
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_RABBITMQ_HOST=rabbitmq  # 使用 RabbitMQ 容器名 rabbitmq
+      - SPRING_REDIS_HOST=Name  # 使用 Redis 容器名 Name
     networks:
       - seckill-network
 
   frontend:
-    image: seckill-frontend:latest
+    image: seckill-frontend:latest  # 根据您的实际镜像标签修改
     container_name: seckill-frontend
     restart: always
     ports:
@@ -25,8 +29,8 @@ services:
     networks:
       - seckill-network
 
-  db:
-    image: mysql:latest
+  Test:  # 使用实际的 MySQL 容器名 Test
+    image: mysql:latest  # 如果需要其他版本或标签，修改为相应的版本
     container_name: Test
     restart: always
     environment:
@@ -36,6 +40,25 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - seckill-network
+
+  rabbitmq:  # 使用实际的 RabbitMQ 容器名
+    image: rabbitmq:latest  # 如果有标签，修改为合适的版本标签
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"  # RabbitMQ 管理控制台端口
+      - "5672:5672"    # RabbitMQ 服务器端口
+    networks:
+      - seckill-network
+
+  Name:  # 使用实际的 Redis 容器名 Name
+    image: redis:latest  # 如果有标签，修改为合适的版本标签
+    container_name: Name
+    restart: always
+    ports:
+      - "6379:6379"
     networks:
       - seckill-network
 
