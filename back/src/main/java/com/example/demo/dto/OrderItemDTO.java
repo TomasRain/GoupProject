@@ -18,4 +18,5 @@ public class OrderItemDTO {
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal totalPrice;
+    private String imageUrl; // 新增字段
 }

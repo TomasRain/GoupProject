@@ -30,12 +30,12 @@
               >
                 <v-card class="mx-auto my-2 pa-2" max-width="200">
                   <!-- 如果订单项中无 imageUrl 字段，可移除 v-img -->
-                  <v-img
+                  <img
                     :src="item.imageUrl || placeholderImage"
                     height="150px"
                     @error="onImageError"
                     class="rounded"
-                  ></v-img>
+                  ></img>
                   <v-card-text>
                     <div class="text-h6">{{ item.productName }}</div>
                     <div class="quantity">数量：{{ item.quantity }}</div>

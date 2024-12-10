@@ -192,6 +192,7 @@ public class OrderServiceImpl implements OrderService {
                     itemDTO.setQuantity(item.getQuantity());
                     itemDTO.setPrice(item.getPrice());
                     itemDTO.setTotalPrice(item.getTotalPrice());
+                    itemDTO.setImageUrl(item.getProduct().getImageUrl()); // 从 product 中获取图片URL
                     return itemDTO;
                 })
                 .collect(Collectors.toSet());
