@@ -16,8 +16,11 @@ import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -125,20 +128,33 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void buyProduct(Long productId, int quantity) {
+        // 从 SecurityContextHolder 获取当前认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("当前未认证，无法下单");
+        }
+
+        // principal 此时是 userId（Long 类型）
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof Long)) {
+            throw new RuntimeException("无法从认证信息中获取用户ID");
+        }
+
+        Long currentUserId = (Long) principal;
+
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UserNotFoundException("用户未找到，ID: " + currentUserId));
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("产品未找到，ID: " + productId));
+
         if (product.getStock() < quantity) {
             throw new InsufficientStockException("库存不足，无法购买此数量的产品。");
         }
+
         product.setStock(product.getStock() - quantity);
         productRepository.save(product);
-        
-        // 获取当前用户信息，假设通过 SecurityContext 获取
-        // 这里简化处理，假设 User 对象存在且为固定用户
-        User user = userRepository.findById(1L)
-                .orElseThrow(() -> new UserNotFoundException("用户未找到，ID: 1"));
 
-        // 创建订单
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
@@ -148,13 +164,12 @@ public class OrderServiceImpl implements OrderService {
         orderItem.setProduct(product);
         orderItem.setQuantity(quantity);
         orderItem.setPrice(product.getSalePrice());
-        // totalPrice 由实体类自动计算
 
         Set<OrderItem> items = new HashSet<>();
         items.add(orderItem);
         order.setOrderItems(items);
-        // totalAmount 将在实体类的生命周期回调中自动计算
-        BigDecimal totalAmount = product.getSalePrice().multiply(new BigDecimal(quantity));
+
+        BigDecimal totalAmount = product.getSalePrice().multiply(BigDecimal.valueOf(quantity));
         order.setTotalAmount(totalAmount);
 
         orderRepository.save(order);
