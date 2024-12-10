@@ -33,17 +33,36 @@
           </div>
           <v-divider></v-divider>
           <p class="mt-4">{{ product.description }}</p>
+          <!-- 点击购买前先弹出确认对话框 -->
           <v-btn
             color="primary"
             class="mt-4"
             large
-            @click="buyProduct(product.id)"
+            @click="confirmBuyProduct(product.id)"
+            :loading="loading"
+            :disabled="loading"
           >
             立即抢购
           </v-btn>
         </v-col>
       </v-row>
     </v-card>
+
+    <!-- 确认对话框：确认购买 -->
+    <v-dialog v-model="dialog" max-width="500">
+      <v-card>
+        <v-card-title class="headline">确认购买</v-card-title>
+        <v-card-text>
+          您确定要购买 <strong>{{ product.name }}</strong> 吗？
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="dialog = false">取消</v-btn>
+          <!-- 点击确认后真正发起购买请求 -->
+          <v-btn color="green darken-1" text @click="buyProduct(product.id)">确认</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- Snackbar 通知 -->
     <v-snackbar
@@ -60,7 +79,6 @@
   </v-container>
 </template>
 
-
 <script>
 import placeholderImage from '@/assets/placeholder.png';
 
@@ -75,6 +93,8 @@ export default {
         color: 'success',
       },
       placeholderImage,
+      dialog: false, // 控制确认对话框显示
+      loading: false, // 控制购买按钮的加载状态
     };
   },
   created() {
@@ -100,9 +120,17 @@ export default {
           }
         });
     },
+    confirmBuyProduct(productId) {
+      // 弹出对话框，等待用户确认
+      this.dialog = true;
+    },
     buyProduct(productId) {
+      // 用户确认后，真正调用购买接口
+      // 修改点：增加 { params: { quantity: 1 } } 来指定购买数量
+      this.dialog = false;
+      this.loading = true;
       this.$axios
-        .post(`/products/buy/${productId}`)
+        .post(`/orders/buy/${productId}`, null, { params: { quantity: 1 } })
         .then(() => {
           this.snackbar.message = '购买成功！';
           this.snackbar.color = 'success';
@@ -111,24 +139,24 @@ export default {
         })
         .catch((error) => {
           console.error('Error buying product:', error);
-          if (error.response && error.response.status !== 401) {
-            this.snackbar.message =
-              error.response.data.message || '购买失败，请重试。';
-            this.snackbar.color = 'error';
-            this.snackbar.show = true;
-          }
+          this.snackbar.message =
+            error.response?.data?.message || '购买失败，请重试。';
+          this.snackbar.color = 'error';
+          this.snackbar.show = true;
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
     goBack() {
       this.$router.back();
     },
-    goHome() {
-      this.$router.push({ name: 'Home' });
+    onImageError(event) {
+      event.target.src = require('@/assets/placeholder.png');
     },
   },
 };
 </script>
-
 
 <style scoped>
 .product-detail {
@@ -151,6 +179,7 @@ h2 {
 }
 
 .original-price {
+  text-decoration: line-through;
   color: #888;
   font-size: 16px;
 }

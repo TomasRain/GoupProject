@@ -54,13 +54,19 @@ export default {
           route: 'ProductList',
         },
         {
+          title: '订单历史',
+          buttonText: '查看订单',
+          buttonColor: 'info',
+          route: 'OrderHistory',
+        },
+        {
           title: '管理页面',
           buttonText: '管理员入口',
           buttonColor: 'error',
           route: 'AdminDashboard',
-          show: this.isAdmin,  // Only show if admin
+          show: this.isAdmin,  // 仅管理员可见
         },
-      ].filter(item => item.show !== false);  // Filter out items based on the `show` property
+      ].filter(item => item.show !== false);
     },
   },
   methods: {
@@ -72,7 +78,6 @@ export default {
 </script>
 
 <style scoped>
-/* Set background gradient */
 .v-container {
   background: linear-gradient(to bottom right, #81c784, #4caf50);
   border-radius: 15px;
@@ -89,7 +94,6 @@ h1 {
   color: #424242;
 }
 
-/* Card Styles */
 .card-item {
   border-radius: 16px;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
@@ -101,14 +105,12 @@ h1 {
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
 }
 
-/* Button Styles */
 .v-btn {
   text-transform: none;
   font-weight: 600;
   border-radius: 30px;
 }
 
-/* Responsive adjustments */
 @media (max-width: 600px) {
   .v-card {
     max-width: 100%;
