@@ -6,18 +6,20 @@
         <h1 class="display-2 font-weight-bold text-primary">秒杀活动</h1>
       </v-col>
     </v-row>
+    <!--
     <pre>{{ seckillEvents }}</pre>
+    -->
     <!-- 秒杀活动列表 -->
     <v-row>
       <v-col
         v-for="event in seckillEvents"
         :key="event.id"
         cols="12"
-        sm="6"
-        md="4"
-        lg="3"
+        sm="12"
+        md="12"
+        lg="12"
       >
-        <v-card class="mx-auto event-card" max-width="344" elevation="4">
+        <v-card class="mx-auto event-card" max-width="700" elevation="4">
           <v-card-title>
             <div class="text-h6 font-weight-bold">{{ event.name }}</div>
           </v-card-title>
@@ -144,6 +146,8 @@ export default {
 <style scoped>
 .event-card {
   transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 600px; /* 设置卡片最小宽度，确保时间显示完整 */
+  max-width: 700px; /* 设置卡片最大宽度 */
 }
 
 .event-card:hover {
