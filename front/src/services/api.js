@@ -29,7 +29,6 @@ api.interceptors.request.use(
         }
       } catch (e) {
         console.error('Token parsing error:', e);
-        // 令牌解析失败，清除令牌并重定向
         store.dispatch('auth/logout');
         router.push({ name: 'Login' });
         return Promise.reject(new Error('无效的令牌'));
@@ -47,12 +46,44 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // 令牌过期或未授权，清除令牌并重定向
       store.dispatch('auth/logout');
       router.push({ name: 'Login' });
     }
     return Promise.reject(error);
   }
 );
+
+// **获取秒杀活动列表**
+export const getSeckillEvents = async () => {
+  try {
+    const response = await api.get('/seckill/events'); // 后端秒杀活动列表接口
+    return response.data; // 返回秒杀活动列表数据
+  } catch (error) {
+    console.error('获取秒杀活动列表失败:', error);
+    throw new Error('获取秒杀活动列表失败');
+  }
+};
+
+// **获取商品列表**
+export const getProducts = async () => {
+  try {
+    const response = await api.get('/products'); // 后端商品列表接口
+    return response.data; // 返回商品数据
+  } catch (error) {
+    console.error('获取商品列表失败:', error);
+    throw new Error('获取商品列表失败');
+  }
+};
+
+// **创建秒杀活动**
+export const createSeckillEvent = async (seckillEventData) => {
+  try {
+    const response = await api.post('/seckill/create', seckillEventData); // 后端秒杀创建接口
+    return response.data; // 返回成功消息
+  } catch (error) {
+    console.error('创建秒杀活动失败:', error);
+    throw new Error('创建秒杀活动失败');
+  }
+};
 
 export default api;

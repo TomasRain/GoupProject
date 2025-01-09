@@ -1,70 +1,48 @@
 <template>
-  <v-container fluid>
-    <!-- 搜索框和注销按钮 -->
-    <v-row class="align-center mb-4">
-      <v-col cols="8">
-        <v-text-field
-          v-model="searchQuery"
-          label="搜索商品"
-          prepend-inner-icon="mdi-magnify"
-          @keyup.enter="onSearch"
-          clearable
-        ></v-text-field>
-      </v-col>
-      <v-col cols="4" class="text-right">
-        <v-btn color="error" @click="handleLogout">注销</v-btn>
+  <div>
+    <pre>{{ seckillEvents }}</pre>
+  </div>
+  <div>
+    <v-container>
+    <!-- 标题 -->
+    <v-row class="mb-4">
+      <v-col>
+        <h1 class="display-2 font-weight-bold text-primary">秒杀活动</h1>
       </v-col>
     </v-row>
 
-    <!-- 商品列表 -->
+    <!-- 秒杀活动列表 -->
     <v-row>
       <v-col
-        v-for="product in products"
-        :key="product.id"
+        v-for="event in seckillEvents"
+        :key="event.id"
         cols="12"
         sm="6"
         md="4"
         lg="3"
       >
-        <v-card
-          class="mx-auto product-card"
-          max-width="344"
-          elevation="4"
-        >
-          <v-img
-            :src="product.imageUrl"
-            height="200px"
-            @error="onImageError"
-            @click="goToProductDetail(product.id)"
-            class="cursor-pointer"
-            aspect-ratio="1.5"
-          ></v-img>
+        <v-card class="mx-auto event-card" max-width="344" elevation="4">
+          <v-card-title>
+            <div class="text-h6 font-weight-bold">{{ event.name }}</div>
+          </v-card-title>
+          <v-card-subtitle>
+            <div class="text-subtitle-1">
+              开始时间: {{ formatDate(event.startTime) }} - 结束时间: {{ formatDate(event.endTime) }}
+            </div>
+          </v-card-subtitle>
           <v-card-text>
-            <div class="text-h6 font-weight-bold">{{ product.name }}</div>
-            <div class="original-price">
-              原价：<s>¥{{ product.originalPrice }}</s>
-            </div>
-            <div class="sale-price">
-              秒杀价：¥{{ product.salePrice }}
-            </div>
+            <div>参与商品：{{ event.products?.length || 0 }} 件</div>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" block @click="buyProduct(product.id)">
-              立即抢购
+            <v-btn
+              color="primary"
+              block
+              @click="goToSeckillEventDetail(event.id)"
+            >
+              查看活动
             </v-btn>
           </v-card-actions>
         </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- 分页控件 -->
-    <v-row>
-      <v-col cols="12" class="text-center">
-        <v-pagination
-          v-model="currentPage"
-          :length="totalPages"
-          @update:modelValue="fetchFlashSaleProducts"
-        ></v-pagination>
       </v-col>
     </v-row>
 
@@ -77,27 +55,21 @@
     >
       {{ snackbar.message }}
       <template #actions>
-        <v-btn text @click="goHome">
+        <v-btn text @click="snackbar.show = false">
           关闭
         </v-btn>
       </template>
     </v-snackbar>
   </v-container>
+  </div>
 </template>
 
 <script>
-import AuthService from '@/services/auth';
-import { mapActions } from 'vuex';
-
 export default {
   name: 'FlashSale',
   data() {
     return {
-      products: [],
-      currentPage: 1,
-      totalPages: 1,
-      itemsPerPage: 8, // 每页显示的商品数量
-      searchQuery: '', // 搜索关键词
+      seckillEvents: [], // 秒杀活动列表
       snackbar: {
         show: false,
         message: '',
@@ -106,103 +78,46 @@ export default {
     };
   },
   created() {
-    this.fetchFlashSaleProducts();
+    this.fetchSeckillEvents(); // 获取秒杀活动列表
   },
   methods: {
-    ...mapActions('auth', ['logout']),
-    fetchFlashSaleProducts() {
+    // 获取所有秒杀活动
+    fetchSeckillEvents() {
       this.$axios
-        .get('/api/products', { // 确保后端接口路径正确
-          params: {
-            page: this.currentPage,
-            size: this.itemsPerPage,
-            query: this.searchQuery,
-          },
-        })
+        .get('/seckill/events')  // 调用后端接口获取秒杀活动列表
         .then((response) => {
-          this.products = response.data.products;
-          this.totalPages = response.data.totalPages;
+          this.seckillEvents = response.data;
         })
         .catch((error) => {
-          console.error('Error fetching products:', error);
-          this.snackbar.message = '获取产品列表失败，请稍后重试。';
+          console.error('Error fetching flash sale events:', error);
+          this.snackbar.message = '获取秒杀活动列表失败，请稍后重试。';
           this.snackbar.color = 'error';
           this.snackbar.show = true;
         });
+        //console.log(seckillEvents);
     },
-    buyProduct(productId) {
-      this.$axios
-        .post(`/api/products/buy/${productId}`)
-        .then(() => {
-          this.snackbar.message = '购买成功！';
-          this.snackbar.color = 'success';
-          this.snackbar.show = true;
-          // 购买成功后刷新商品列表
-          this.fetchFlashSaleProducts();
-        })
-        .catch((error) => {
-          console.error('Error buying product:', error);
-          if (error.response && error.response.status !== 401) {
-            this.snackbar.message = error.response.data.message || '购买失败，请重试。';
-            this.snackbar.color = 'error';
-            this.snackbar.show = true;
-          }
-        });
+
+    // 格式化日期
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString(); // 可以根据需求调整日期格式
     },
-    handleLogout() {
-      AuthService.logout(); // 通过 Vuex action 执行登出操作
-    },
-    onSearch() {
-      this.currentPage = 1;
-      this.fetchFlashSaleProducts();
-    },
-    goToProductDetail(productId) {
-      this.$router.push({ name: 'ProductDetail', params: { id: productId } });
-    },
-    goHome() {
-      this.$router.push({ name: 'Home' });
-    },
-    onImageError(event) {
-      event.target.src = require('@/assets/placeholder.png'); // 替换为占位图的路径
-    },
-  },
-  watch: {
-    currentPage() {
-      this.fetchFlashSaleProducts();
+
+    // 查看秒杀活动详情
+    goToSeckillEventDetail(eventId) {
+      this.$router.push({ name: 'SeckillEventDetail', params: { id: eventId } });
     },
   },
 };
 </script>
 
 <style scoped>
-.original-price {
-  color: #888;
-}
-
-.sale-price {
-  color: #e60012;
-  font-size: 18px;
-  font-weight: bold;
-}
-
-/* 调整卡片样式 */
-.product-card {
+.event-card {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.product-card:hover {
+.event-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-/* 响应式调整 */
-@media (max-width: 600px) {
-  .v-card {
-    max-width: 100%;
-  }
 }
 </style>

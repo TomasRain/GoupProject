@@ -63,7 +63,7 @@ export default {
           title: '管理页面',
           buttonText: '管理员入口',
           buttonColor: 'error',
-          route: 'AdminDashboard',
+          route: 'AdminPage',
           show: this.isAdmin,  // 仅管理员可见
         },
       ].filter(item => item.show !== false);

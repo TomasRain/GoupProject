@@ -1,3 +1,5 @@
+// src/router/index.js
+
 import { createRouter, createWebHashHistory } from 'vue-router';
 import store from '../store';
 
@@ -8,8 +10,9 @@ import ProductDetail from '../components/ProductDetail.vue';
 import Home from '../components/Home.vue';
 import ProductList from '../components/ProductList.vue';
 import Seckill from '../components/Seckill.vue';
-import OrderHistory from '../components/OrderHistory.vue'; // 新增
-import OrderDetail from '../components/OrderDetail.vue';   // 新增
+import OrderHistory from '../components/OrderHistory.vue';
+import OrderDetail from '../components/OrderDetail.vue';
+import AdminPage from '../components/AdminPage.vue'; // 新增管理员页面组件
 
 const routes = [
   {
@@ -54,6 +57,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/admin',
+    name: 'AdminPage',
+    component: AdminPage,
+    meta: { requiresAuth: true, role: 'ADMIN' },
+  },
+  {
     path: '/orders',
     name: 'OrderHistory',
     component: OrderHistory,
@@ -80,10 +89,13 @@ const router = createRouter({
 // 导航守卫
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.meta.requiresAuth;
-  const isAuthenticated = store.state.auth.isAuthenticated;
+  const role = store.state.auth.role;
 
-  if (requiresAuth && !isAuthenticated) {
+  if (requiresAuth && !store.state.auth.isAuthenticated) {
     next({ name: 'Login' });
+  } else if (to.meta.role && to.meta.role !== role) {
+    // 检查用户角色是否匹配
+    next(false);
   } else {
     next();
   }
