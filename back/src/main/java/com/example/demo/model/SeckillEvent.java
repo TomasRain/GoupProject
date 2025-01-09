@@ -1,7 +1,6 @@
 package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -23,16 +22,15 @@ public class SeckillEvent {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "GMT+8")
     private Date endTime;    // 活动结束时间
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
+    @ElementCollection  // 使用 ElementCollection 来存储商品 ID
+    @CollectionTable(
             name = "seckill_event_product",
-            joinColumns = @JoinColumn(name = "seckill_event_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
+            joinColumns = @JoinColumn(name = "seckill_event_id")
     )
-    private Set<Product> products;  // 参与秒杀的商品集合
+    @Column(name = "product_id")
+    private Set<Long> productIds;  // 仅保存商品的 ID 集合
 
     @OneToMany(mappedBy = "seckillEvent", cascade = CascadeType.ALL)
-    @JsonIgnore  // 防止序列化 `productSeckillDiscounts`，避免潜在的循环引用
     private Set<ProductSeckillDiscount> productSeckillDiscounts;  // 商品折扣
 
     @ManyToOne
@@ -73,12 +71,12 @@ public class SeckillEvent {
         this.endTime = endTime;
     }
 
-    public Set<Product> getProducts() {
-        return products;
+    public Set<Long> getProductIds() {
+        return productIds;
     }
 
-    public void setProducts(Set<Product> products) {
-        this.products = products;
+    public void setProductIds(Set<Long> productIds) {
+        this.productIds = productIds;
     }
 
     public Set<ProductSeckillDiscount> getProductSeckillDiscounts() {

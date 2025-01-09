@@ -77,6 +77,26 @@ public class ProductController {
     }
 
     /**
+     * 批量查询商品详情
+     */
+    @PostMapping("/details")
+    public ResponseEntity<List<ProductDTO>> getProductDetails(@RequestBody Map<String, List<Long>> request) {
+        List<Long> ids = request.get("ids");
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().build(); // 如果请求为空，返回 400 错误
+        }
+
+        List<Product> products = productRepository.findAllById(ids);
+
+        List<ProductDTO> productDTOs = products.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(productDTOs);
+    }
+
+
+    /**
      * 创建新产品
      */
     @PostMapping

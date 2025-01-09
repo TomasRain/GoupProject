@@ -1,5 +1,3 @@
-// src/router/index.js
-
 import { createRouter, createWebHashHistory } from 'vue-router';
 import store from '../store';
 
@@ -13,6 +11,7 @@ import Seckill from '../components/Seckill.vue';
 import OrderHistory from '../components/OrderHistory.vue';
 import OrderDetail from '../components/OrderDetail.vue';
 import AdminPage from '../components/AdminPage.vue'; // 新增管理员页面组件
+import SeckillEventDetail from '../components/SeckillEventDetail.vue'; // 导入秒杀活动详情组件
 
 const routes = [
   {
@@ -55,6 +54,13 @@ const routes = [
     name: 'Seckill',
     component: Seckill,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/seckill/:event', // 添加秒杀活动详情页面路由
+    name: 'SeckillEventDetail',
+    component: SeckillEventDetail,
+    meta: { requiresAuth: true },
+    props: true,
   },
   {
     path: '/admin',

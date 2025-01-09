@@ -1,5 +1,6 @@
 package com.example.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -12,10 +13,12 @@ public class ProductSeckillDiscount {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore  // 防止序列化时进入循环引用
     private Product product;  // 商品
 
     @ManyToOne
     @JoinColumn(name = "seckill_event_id")
+    @JsonIgnore  // 防止序列化时进入循环引用
     private SeckillEvent seckillEvent;  // 关联的秒杀活动
 
     private BigDecimal discount;  // 秒杀折扣

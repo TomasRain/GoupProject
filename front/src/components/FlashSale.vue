@@ -1,16 +1,12 @@
 <template>
-  <div>
-    <pre>{{ seckillEvents }}</pre>
-  </div>
-  <div>
-    <v-container>
+  <v-container class="pa-5">
     <!-- 标题 -->
-    <v-row class="mb-4">
-      <v-col>
+    <v-row justify="center" class="mb-8">
+      <v-col cols="12" class="text-center">
         <h1 class="display-2 font-weight-bold text-primary">秒杀活动</h1>
       </v-col>
     </v-row>
-
+    <pre>{{ seckillEvents }}</pre>
     <!-- 秒杀活动列表 -->
     <v-row>
       <v-col
@@ -32,12 +28,17 @@
           </v-card-subtitle>
           <v-card-text>
             <div>参与商品：{{ event.products?.length || 0 }} 件</div>
+            <ul>
+              <li v-for="product in event.products" :key="product.id">
+                {{ product.name }} - 库存: {{ product.stock }} - 秒杀价: {{ product.salePrice }}
+              </li>
+            </ul>
           </v-card-text>
           <v-card-actions>
             <v-btn
               color="primary"
               block
-              @click="goToSeckillEventDetail(event.id)"
+              @click="goToSeckillEventDetail(event)"
             >
               查看活动
             </v-btn>
@@ -61,7 +62,6 @@
       </template>
     </v-snackbar>
   </v-container>
-  </div>
 </template>
 
 <script>
@@ -82,19 +82,49 @@ export default {
   },
   methods: {
     // 获取所有秒杀活动
-    fetchSeckillEvents() {
-      this.$axios
-        .get('/seckill/events')  // 调用后端接口获取秒杀活动列表
-        .then((response) => {
-          this.seckillEvents = response.data;
-        })
-        .catch((error) => {
-          console.error('Error fetching flash sale events:', error);
-          this.snackbar.message = '获取秒杀活动列表失败，请稍后重试。';
-          this.snackbar.color = 'error';
-          this.snackbar.show = true;
+    async fetchSeckillEvents() {
+      try {
+        const response = await this.$axios.get('/seckill/events'); // 调用后端接口获取秒杀活动列表
+        const events = response.data;
+
+        // 收集所有商品 ID
+        const allProductIds = [];
+        events.forEach(event => {
+          allProductIds.push(...event.productIds); // 将每个活动的 productIds 合并到一个数组中
         });
-        //console.log(seckillEvents);
+
+        // 去重处理商品 ID
+        const uniqueProductIds = [...new Set(allProductIds)];
+
+        // 获取所有商品详情
+        const products = await this.fetchProductsByIds(uniqueProductIds);
+
+        // 将商品信息附加到每个秒杀活动中
+        events.forEach(event => {
+          event.products = event.productIds.map(id => products.find(product => product.id === id) || {});
+        });
+
+        this.seckillEvents = events; // 更新秒杀活动列表
+      } catch (error) {
+        console.error('Error fetching flash sale events:', error);
+        this.snackbar.message = '获取秒杀活动列表失败，请稍后重试。';
+        this.snackbar.color = 'error';
+        this.snackbar.show = true;
+      }
+    },
+
+    // 根据商品 ID 列表批量获取商品信息
+    async fetchProductsByIds(productIds) {
+      try {
+        const response = await this.$axios.post('/products/details', { ids: productIds });
+        return response.data; // 返回商品详细信息列表
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        this.snackbar.message = '获取商品信息失败，请稍后重试。';
+        this.snackbar.color = 'error';
+        this.snackbar.show = true;
+        return []; // 返回空数组，避免前端报错
+      }
     },
 
     // 格式化日期
@@ -104,8 +134,8 @@ export default {
     },
 
     // 查看秒杀活动详情
-    goToSeckillEventDetail(eventId) {
-      this.$router.push({ name: 'SeckillEventDetail', params: { id: eventId } });
+    goToSeckillEventDetail(event) {
+      this.$router.push({ name: 'SeckillEventDetail', params: { event: JSON.stringify(event) } });
     },
   },
 };
@@ -119,5 +149,15 @@ export default {
 .event-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  font-size: 0.9em;
+  margin-bottom: 4px;
 }
 </style>
